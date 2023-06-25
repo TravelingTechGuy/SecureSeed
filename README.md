@@ -1,6 +1,6 @@
 # SecureSeed
 This program generates a secure seed from a 100 d6 dice throws - either provided by the user, or taken from [Random.Org](https://random.org).  
-For a key to be secure, at least 100 (well technically 99) dice throws are needed. These are provided as a string of digits 1-6. 
+For a key to be secure, at least 100 bytes of entropy (well technically 99) are needed. These are provided as a string of digits 1-6, generate by dice throws. 
 
 ## Usage
 Clone the repo, and either build, or run `app.go`.
@@ -43,7 +43,7 @@ Mnemonic:
 ```
 
 ## Using Random.org API
-To use Random.org, please register on the site (free), create a free API key (1000 free calls supported), and place the URI and API key in a `.env` file at the top of the directory
+To use Random.org, please register on the site (free), create a free API key (1000 free calls supported), and place the URI and API key in a `.env` file at the top directory.
 ```env
 RO_URI=https://api.random.org/json-rpc/4/invoke
 RO_APIKEY=<your API key>
