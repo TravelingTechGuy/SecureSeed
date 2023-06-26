@@ -1,4 +1,4 @@
-package RandomOrg
+package randomOrg
 
 import (
 	"bytes"

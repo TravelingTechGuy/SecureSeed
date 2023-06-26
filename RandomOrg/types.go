@@ -1,4 +1,4 @@
-package RandomOrg
+package randomOrg
 
 type DiceResponse struct {
 	ID     int        `json:"id"`

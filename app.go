@@ -1,8 +1,8 @@
 package main
 
 import (
-	"SecureSeed/Encryption"
-	"SecureSeed/RandomOrg"
+	"SecureSeed/encryption"
+	"SecureSeed/randomOrg"
 	"fmt"
 	"log"
 	"os"
@@ -42,7 +42,7 @@ func main() {
 			os.Exit(2)
 		}
 	} else {
-		dice, err := RandomOrg.GetDiceRoll(100)
+		dice, err := randomOrg.GetDiceRoll(100)
 		if err != nil {
 			log.Fatalf("Error calling Random.org: %s", err)
 			os.Exit(3)
@@ -52,14 +52,16 @@ func main() {
 	fmt.Printf("Dice throws:\n%s\n\n", data)
 
 	//calculate entropy
-	var entropy []byte = Encryption.GetEntropy(data)
+	var entropy []byte = encryption.GetEntropy(data)
 	fmt.Printf("Private key:\n%x\n\n", entropy)
 
 	//get mnemonic from entropy
-	mnemonic, err := Encryption.GetMnemonic(entropy)
+	mnemonic, err := encryption.GetMnemonic(entropy)
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("Mnemonic:")
 	printMnemonic(mnemonic)
+
+	encryption.GetEthereumAddress()
 }
