@@ -12,7 +12,7 @@ import (
 	"github.com/tyler-smith/go-bip39"
 )
 
-func GetEntropy(data string) []byte {
+func GetPrivateKeyFromEntropy(data string) []byte {
 	h := sha256.New()
 	h.Write([]byte(data))
 	return h.Sum(nil)
@@ -26,7 +26,7 @@ func GetMnemonic(entropy []byte) ([]string, error) {
 	return strings.Split(mnemonic, " "), nil
 }
 
-func GetEthereumAddress() {
+func GetEthereumAddress(key []byte) {
 	privateKey, err := crypto.GenerateKey()
 	if err != nil {
 		log.Fatal(err)

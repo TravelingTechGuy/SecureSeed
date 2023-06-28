@@ -34,10 +34,10 @@ func main() {
 	}
 	//get 100 dice rolls, either provided by user, or from Random.org
 	args := os.Args[1:]
-	var data string
+	var entropy string
 	if len(args) > 0 && strings.ToLower(args[0]) == "-e" {
-		data = args[1]
-		if len(data) < 100 {
+		entropy = args[1]
+		if len(entropy) < 100 {
 			log.Fatal("Please provide at least 100 dice throws")
 			os.Exit(2)
 		}
@@ -47,21 +47,21 @@ func main() {
 			log.Fatalf("Error calling Random.org: %s", err)
 			os.Exit(3)
 		}
-		data = diceToStr(dice)
+		entropy = diceToStr(dice)
 	}
-	fmt.Printf("Dice throws:\n%s\n\n", data)
+	fmt.Printf("Dice throws:\n%s\n\n", entropy)
 
-	//calculate entropy
-	var entropy []byte = encryption.GetEntropy(data)
-	fmt.Printf("Private key:\n%x\n\n", entropy)
+	//calculate privateKey
+	privateKey := encryption.GetPrivateKeyFromEntropy(entropy)
+	fmt.Printf("Private key:\n%x\n\n", privateKey)
 
 	//get mnemonic from entropy
-	mnemonic, err := encryption.GetMnemonic(entropy)
+	mnemonic, err := encryption.GetMnemonic(privateKey)
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("Mnemonic:")
 	printMnemonic(mnemonic)
 
-	encryption.GetEthereumAddress()
+	// encryption.GetEthereumAddress(privateKey)
 }
