@@ -20,8 +20,19 @@ func diceToStr(data []uint8) string {
 	return ret
 }
 
-func printMnemonic(mnemonic []string) {
-	for i, w := range mnemonic {
+func printMnemonic(mnemonic string) {
+	fmt.Println("Mnemonic:")
+	for i, w := range strings.Split(mnemonic, " ") {
+		fmt.Printf("%2d: %-8s\t", i+1, w)
+		if (i+1)%4 == 0 {
+			fmt.Print("\n")
+		}
+	}
+}
+
+func printAddresses(addresses []string) {
+	fmt.Println("Ethereum Addresses:")
+	for i, w := range addresses {
 		fmt.Printf("%2d: %s\n", i+1, w)
 	}
 }
@@ -60,8 +71,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Mnemonic:")
 	printMnemonic(mnemonic)
 
-	// encryption.GetEthereumAddress(privateKey)
+	//get Ethereum addresses from mnemonic
+	addresses, err := encryption.DeriveEthereumAddresses(mnemonic, 3)
+	if err != nil {
+		log.Fatal(err)
+	}
+	printAddresses(addresses)
 }

@@ -1,14 +1,10 @@
 package encryption
 
 import (
-	"crypto/ecdsa"
 	"crypto/sha256"
 	"fmt"
-	"log"
-	"strings"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/crypto"
+	hdwallet "github.com/miguelmota/go-ethereum-hdwallet"
 	"github.com/tyler-smith/go-bip39"
 )
 
@@ -18,32 +14,29 @@ func GetPrivateKeyFromEntropy(data string) []byte {
 	return h.Sum(nil)
 }
 
-func GetMnemonic(entropy []byte) ([]string, error) {
+func GetMnemonic(entropy []byte) (string, error) {
 	mnemonic, err := bip39.NewMnemonic(entropy)
+	if err != nil {
+		return "", err
+	}
+	return mnemonic, nil
+}
+
+func DeriveEthereumAddresses(mnemonic string, num int) ([]string, error) {
+	wallet, err := hdwallet.NewFromMnemonic(mnemonic)
 	if err != nil {
 		return nil, err
 	}
-	return strings.Split(mnemonic, " "), nil
-}
 
-func GetEthereumAddress(key []byte) {
-	privateKey, err := crypto.GenerateKey()
-	if err != nil {
-		log.Fatal(err)
+	result := make([]string, num)
+
+	for i := 0; i < num; i++ {
+		path := hdwallet.MustParseDerivationPath(fmt.Sprintf("m/44'/60'/0'/0/%d", i))
+		account, err := wallet.Derive(path, false)
+		if err != nil {
+			return nil, err
+		}
+		result[i] = account.Address.Hex()
 	}
-
-	privateKeyBytes := crypto.FromECDSA(privateKey)
-	fmt.Println("SAVE BUT DO NOT SHARE THIS (Private Key):", hexutil.Encode(privateKeyBytes))
-
-	publicKey := privateKey.Public()
-	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
-	if !ok {
-		log.Fatal("cannot assert type: publicKey is not of type *ecdsa.PublicKey")
-	}
-
-	publicKeyBytes := crypto.FromECDSAPub(publicKeyECDSA)
-	fmt.Println("Public Key:", hexutil.Encode(publicKeyBytes))
-
-	address := crypto.PubkeyToAddress(*publicKeyECDSA).Hex()
-	fmt.Println("Address:", address)
+	return result, nil
 }
