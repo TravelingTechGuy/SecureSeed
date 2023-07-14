@@ -52,6 +52,6 @@ func GetDiceRoll(n uint8) ([]uint8, error) {
 	if result.ID != id {
 		return nil, errors.New("result id different than request - tampering suspected")
 	}
-	fmt.Println("Requests left: ", result.Result.RequestsLeft)
+	fmt.Println("Random.org Requests left in the next 24 hours: ", result.Result.RequestsLeft)
 	return []uint8(result.Result.Random.Data), nil
 }
