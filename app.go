@@ -3,6 +3,7 @@ package main
 import (
 	"SecureSeed/encryption"
 	"SecureSeed/randomOrg"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -44,10 +45,17 @@ func main() {
 		os.Exit(1)
 	}
 	//get 100 dice rolls, either provided by user, or from Random.org
-	args := os.Args[1:]
 	var entropy string
-	if len(args) > 0 && strings.ToLower(args[0]) == "-e" {
-		entropy = args[1]
+	var ethAddress, bitcoinAddress uint
+	var legacy bool
+
+	flag.StringVar(&entropy, "e", "", "Provide 100 dice throws as a string")
+	flag.UintVar(&ethAddress, "eth", 0, "Derive n Ethereum addresses")
+	flag.UintVar(&bitcoinAddress, "btc", 0, "Derive n Bitcoin addresses")
+	flag.BoolVar(&legacy, "legacy", false, "Derive Legacy Bitcoin addresses (instead of SegWit)")
+	flag.Parse()
+
+	if entropy != "" {
 		if len(entropy) < 100 {
 			log.Fatal("Please provide at least 100 dice throws")
 			os.Exit(2)
@@ -72,11 +80,18 @@ func main() {
 		log.Fatal(err)
 	}
 	printMnemonic(mnemonic)
+	fmt.Println()
 
-	//get Ethereum addresses from mnemonic
-	addresses, err := encryption.DeriveEthereumAddresses(mnemonic, 3)
-	if err != nil {
-		log.Fatal(err)
+	if ethAddress > 0 {
+		//get Ethereum addresses from mnemonic
+		addresses, err := encryption.DeriveEthereumAddresses(mnemonic, ethAddress)
+		if err != nil {
+			log.Fatal(err)
+		}
+		printAddresses(addresses)
 	}
-	printAddresses(addresses)
+
+	if bitcoinAddress > 0 {
+		fmt.Printf("BTC addresses TBD. %d addresses (did you ask for legcay format? %t)\n", bitcoinAddress, legacy)
+	}
 }
