@@ -22,7 +22,7 @@ func GetMnemonic(entropy []byte) (string, error) {
 	return mnemonic, nil
 }
 
-func DeriveEthereumAddresses(mnemonic string, num int) ([]string, error) {
+func DeriveEthereumAddresses(mnemonic string, num uint) ([]string, error) {
 	wallet, err := hdwallet.NewFromMnemonic(mnemonic)
 	if err != nil {
 		return nil, err
@@ -30,7 +30,7 @@ func DeriveEthereumAddresses(mnemonic string, num int) ([]string, error) {
 
 	result := make([]string, num)
 
-	for i := 0; i < num; i++ {
+	for i := uint(0); i < num; i++ {
 		path := hdwallet.MustParseDerivationPath(fmt.Sprintf("m/44'/60'/0'/0/%d", i))
 		account, err := wallet.Derive(path, false)
 		if err != nil {
@@ -40,3 +40,7 @@ func DeriveEthereumAddresses(mnemonic string, num int) ([]string, error) {
 	}
 	return result, nil
 }
+
+// func DeriveBitcoinAddresses(mnemonic string, num uint, legacy bool) ([]string, error) {
+
+// }
